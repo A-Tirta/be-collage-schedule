@@ -4,12 +4,16 @@
   "description": "Backend CRUD api for collage schedule ",
   "main": "index.js",
   "scripts": {
+    "start:dev": "nodemon ./src/server.ts dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
+    "dotenv": "^16.4.7",
+    "nodemon": "^3.1.9"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
