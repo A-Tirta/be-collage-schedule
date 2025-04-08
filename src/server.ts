@@ -5,32 +5,48 @@ import cookieParser from "cookie-parser";
 
 import { JWTCheck } from "./middleware";
 import rootRoutes from "./routes";
+import sequelize from "./db";
+
+// Load env variables early
+dotenv.config();
 
 async function main() {
-  dotenv.config();
-
   const app = express();
 
+  // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
   app.use(
     cors({
-      origin: "*",
+      origin: process.env.CLIENT_ORIGIN || "*", // use env for flexibility
       credentials: true,
     })
   );
+
   app.use(cookieParser());
 
+  // JWT Middleware
   app.use(JWTCheck);
 
+  // Routes
   app.use(rootRoutes);
 
-  app.listen(process.env.PORT, () => {
-    console.log("Server Up and Running Port: " + process.env.PORT);
-  });
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Database connection has been established successfully.");
+
+    await sequelize.sync({ alter: true }); // consider `{ force: true }` only in dev, `alter: true` is safer
+    console.log("🔁 All models were synchronized successfully.");
+
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+      console.log(`🚀 Server Up and Running Port: ${port}`);
+    });
+  } catch (error) {
+    console.error("❌ Unable to connect to the database:", error);
+    process.exit(1); // Exit if DB fails
+  }
 }
 
-main().catch((err) => {
-  console.log(err);
-});
+main();
