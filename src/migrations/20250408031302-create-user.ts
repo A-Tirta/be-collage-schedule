@@ -15,6 +15,9 @@ export default {
       email: {
         type: DataTypes.STRING,
       },
+      password: {
+        type: DataTypes.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

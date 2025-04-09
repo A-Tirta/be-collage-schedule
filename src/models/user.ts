@@ -17,4 +17,11 @@ export class User extends Model {
     unique: true,
   })
   email!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    unique: true,
+  })
+  password!: string;
 }

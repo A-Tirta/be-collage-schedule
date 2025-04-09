@@ -2,8 +2,7 @@ import { Router } from "express";
 
 const routes = Router();
 
-/* Example */
-// import status from '../controller/status';
-// routes.use('/status', status);
+import user from "../controller/user";
+routes.use("/user", user);
 
 export default routes;
