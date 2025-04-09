@@ -7,10 +7,9 @@ import { JWTCheck } from "./middleware";
 import rootRoutes from "./routes";
 import sequelize from "./db";
 
-// Load env variables early
-dotenv.config();
-
 async function main() {
+  dotenv.config();
+
   const app = express();
 
   // Middleware
