@@ -1,16 +1,7 @@
-import { Dialect } from "sequelize";
 import * as dotenv from "dotenv";
+import { DBConfig } from "../interface";
 
 dotenv.config();
-
-interface DBConfig {
-  username: string;
-  password: string;
-  database: string;
-  host: string;
-  port: number;
-  dialect: Dialect;
-}
 
 const config: { [key: string]: DBConfig } = {
   development: {
