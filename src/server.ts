@@ -35,9 +35,6 @@ async function main() {
     await sequelize.authenticate();
     console.log("✅ Database connection has been established successfully.");
 
-    await sequelize.sync({ alter: true }); // consider `{ force: true }` only in dev, `alter: true` is safer
-    console.log("🔁 All models were synchronized successfully.");
-
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
       console.log(`🚀 Server Up and Running Port: ${port}`);
