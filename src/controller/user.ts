@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { body, query, validationResult } from "express-validator";
+import { body, query, header, validationResult } from "express-validator";
 import { genSalt, hash, compare } from "bcryptjs";
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 
 import { returnResponse } from "../interface";
 import { User } from "../models/user";
@@ -43,14 +43,13 @@ router.post(
           };
         } else {
           resObject = {
-            statuscode: 400,
+            statuscode: 404,
             data: {
               message: "User already exist, please use different data",
             },
           };
         }
       } catch (error) {
-        console.log(error);
         resObject = {
           statuscode: 500,
           data: {
@@ -110,14 +109,70 @@ router.post(
           }
         } else {
           resObject = {
-            statuscode: 400,
+            statuscode: 404,
             data: {
               message: "Data not found",
             },
           };
         }
       } catch (error) {
-        console.log(error);
+        resObject = {
+          statuscode: 500,
+          data: {
+            message: "There is something wrong with the server",
+          },
+        };
+      }
+    } else {
+      resObject = {
+        statuscode: 400,
+        data: {
+          message: "Forms is not completed, please check again",
+          info: err.array(),
+        },
+      };
+    }
+
+    return res.status(resObject.statuscode).json(resObject.data);
+  }
+);
+
+router.get(
+  "/profile",
+  header("authorization").exists(),
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const err = validationResult(req);
+
+    if (err.isEmpty()) {
+      try {
+        const token = req.header("authorization")?.split(" ")[1];
+        const { id: userId } = verify(
+          token as string,
+          String(process.env.TOKEN)
+        ) as { id: string };
+
+        const getUserData = await User.findOne({
+          where: { id: userId },
+          attributes: { exclude: ["password"] },
+        });
+
+        if (getUserData) {
+          resObject = {
+            statuscode: 200,
+            data: {
+              message: "Data created successfully",
+              data: getUserData,
+            },
+          };
+        } else {
+          resObject = {
+            statuscode: 404,
+            data: {
+              message: "Data not found",
+            },
+          };
+        }
+      } catch (error) {
         resObject = {
           statuscode: 500,
           data: {
