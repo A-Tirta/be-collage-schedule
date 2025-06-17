@@ -3,7 +3,8 @@ import { body, query, header, validationResult } from "express-validator";
 import { genSalt, hash, compare } from "bcryptjs";
 import { sign, verify } from "jsonwebtoken";
 
-import { returnResponse } from "../interface";
+import { returnResponse, token } from "../interface";
+import { tokenConverter } from "../function";
 import { User } from "../models/user";
 
 const router = Router();
@@ -139,20 +140,15 @@ router.post(
 
 router.get(
   "/profile",
-  header("authorization").exists(),
   async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const err = validationResult(req);
 
     if (err.isEmpty()) {
       try {
-        const token = req.header("authorization")?.split(" ")[1];
-        const { id: userId } = verify(
-          token as string,
-          String(process.env.TOKEN)
-        ) as { id: string };
+        const reader: token = tokenConverter(req.headers["authorization"]!);
 
         const getUserData = await User.findOne({
-          where: { id: userId },
+          where: { id: reader.id },
           attributes: { exclude: ["password"] },
         });
 
