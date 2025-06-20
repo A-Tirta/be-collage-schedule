@@ -11,6 +11,7 @@ export function getRequestQuery(req: Request): any {
 
   query.page = Number(query.page) > 0 ? Number(query.page) : 1;
   query.limit = Number(query.limit) > 0 ? Number(query.limit) : 10;
+  query.perPage = query.limit;
   query.offset = (query.page - 1) * query.limit;
   query.sortBy = (query.sort_by as string) || "id";
   query.sortMode = (query.sort_mode as string) || "desc";
