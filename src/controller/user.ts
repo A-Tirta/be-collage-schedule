@@ -1,15 +1,14 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { body, query, header, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { genSalt, hash, compare } from "bcryptjs";
-import { sign, verify } from "jsonwebtoken";
+import { sign } from "jsonwebtoken";
 
-import { returnResponse, token } from "../interface";
+import { responseParsed, errorLog } from "../helpers";
+import { token } from "../interface";
 import { tokenConverter } from "../function";
 import { User } from "../models/user";
 
 const router = Router();
-
-let resObject: returnResponse;
 
 router.post(
   "/register",
@@ -35,40 +34,24 @@ router.post(
             password: hashedPassword,
           });
 
-          resObject = {
-            statuscode: 200,
-            data: {
-              message: "Data created successfully",
-              data: data,
-            },
-          };
+          return res.status(201).json(responseParsed.apiCreated(data));
         } else {
-          resObject = {
-            statuscode: 404,
-            data: {
-              message: "User already exist, please use different data",
-            },
-          };
+          return res.status(404).json(responseParsed.dataNotFound());
         }
       } catch (error) {
-        resObject = {
-          statuscode: 500,
-          data: {
-            message: "There is something wrong with the server",
-          },
-        };
+        errorLog(error, res);
       }
     } else {
-      resObject = {
-        statuscode: 400,
-        data: {
-          message: "Forms is not completed, please check again",
-          info: err.array(),
-        },
-      };
+      return res
+        .status(400)
+        .json(
+          responseParsed.errorResponse(
+            "Forms is not completed, please check again",
+            400,
+            err.array()
+          )
+        );
     }
-
-    return res.status(resObject.statuscode).json(resObject.data);
   }
 );
 
@@ -100,41 +83,29 @@ router.post(
               }
             );
 
-            resObject = {
-              statuscode: 200,
-              data: {
-                message: "User berhasil login",
-                info: { token },
-              },
-            };
+            return res
+              .status(200)
+              .json(
+                responseParsed.successResponse(token, "Login Successfully")
+              );
           }
         } else {
-          resObject = {
-            statuscode: 404,
-            data: {
-              message: "Data not found",
-            },
-          };
+          return res.status(404).json(responseParsed.dataNotFound());
         }
       } catch (error) {
-        resObject = {
-          statuscode: 500,
-          data: {
-            message: "There is something wrong with the server",
-          },
-        };
+        errorLog(error, res);
       }
     } else {
-      resObject = {
-        statuscode: 400,
-        data: {
-          message: "Forms is not completed, please check again",
-          info: err.array(),
-        },
-      };
+      return res
+        .status(400)
+        .json(
+          responseParsed.errorResponse(
+            "Forms is not completed, please check again",
+            400,
+            err.array()
+          )
+        );
     }
-
-    return res.status(resObject.statuscode).json(resObject.data);
   }
 );
 
@@ -153,40 +124,24 @@ router.get(
         });
 
         if (getUserData) {
-          resObject = {
-            statuscode: 200,
-            data: {
-              message: "Data created successfully",
-              data: getUserData,
-            },
-          };
+          return res.status(200).json(responseParsed.apiItem(getUserData));
         } else {
-          resObject = {
-            statuscode: 404,
-            data: {
-              message: "Data not found",
-            },
-          };
+          return res.status(404).json(responseParsed.dataNotFound());
         }
       } catch (error) {
-        resObject = {
-          statuscode: 500,
-          data: {
-            message: "There is something wrong with the server",
-          },
-        };
+        errorLog(error, res);
       }
     } else {
-      resObject = {
-        statuscode: 400,
-        data: {
-          message: "Forms is not completed, please check again",
-          info: err.array(),
-        },
-      };
+      return res
+        .status(400)
+        .json(
+          responseParsed.errorResponse(
+            "Forms is not completed, please check again",
+            400,
+            err.array()
+          )
+        );
     }
-
-    return res.status(resObject.statuscode).json(resObject.data);
   }
 );
 
