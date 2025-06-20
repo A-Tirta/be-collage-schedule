@@ -10,14 +10,28 @@ export interface DBConfig {
 }
 
 export interface returnResponse {
-  statuscode: number;
-  data: {
+  meta: {
+    status: number;
     message: string;
-    data?: any;
-    info?: any;
+    total?: number;
+    perPage?: number;
+    page?: number;
+    lastPage?: number;
   };
+  data?: any;
+  info?: any;
 }
 
 export interface token {
   id: number;
+}
+
+export interface pagination {
+  limit: number;
+  offset: number;
+  page: number;
+  sortBy: string;
+  sortMode: string;
+  total?: number;
+  totalPages?: number;
 }
