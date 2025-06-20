@@ -29,8 +29,8 @@ class responseParsed {
       meta: {
         status: 200,
         message: "Data retrieval successfully",
-        total: query.count,
-        perPage: query.limit,
+        total: query.total,
+        perPage: query.perPage,
         page: query.page,
         lastPage: query.totalPages,
       },

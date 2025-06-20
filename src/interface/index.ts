@@ -25,13 +25,3 @@ export interface returnResponse {
 export interface token {
   id: number;
 }
-
-export interface pagination {
-  limit: number;
-  offset: number;
-  page: number;
-  sortBy: string;
-  sortMode: string;
-  total?: number;
-  totalPages?: number;
-}
