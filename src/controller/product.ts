@@ -1,7 +1,12 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { body, query, header, validationResult } from "express-validator";
 
-import { getRequestQuery, responseParsed, errorLog } from "../helpers";
+import {
+  getRequestQuery,
+  responseParsed,
+  errorLog,
+  handleValidation,
+} from "../helpers";
 import { Product } from "../models/product";
 
 const router = Router();
@@ -30,15 +35,7 @@ router.get(
         errorLog(error, res);
       }
     } else {
-      return res
-        .status(400)
-        .json(
-          responseParsed.errorResponse(
-            "Forms is not completed, please check again",
-            400,
-            err.array()
-          )
-        );
+      handleValidation(res, err);
     }
   }
 );

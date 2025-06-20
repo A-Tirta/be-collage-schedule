@@ -3,7 +3,7 @@ import { body, validationResult } from "express-validator";
 import { genSalt, hash, compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
 
-import { responseParsed, errorLog } from "../helpers";
+import { responseParsed, errorLog, handleValidation } from "../helpers";
 import { token } from "../interface";
 import { tokenConverter } from "../function";
 import { User } from "../models/user";
@@ -42,15 +42,7 @@ router.post(
         errorLog(error, res);
       }
     } else {
-      return res
-        .status(400)
-        .json(
-          responseParsed.errorResponse(
-            "Forms is not completed, please check again",
-            400,
-            err.array()
-          )
-        );
+      handleValidation(res, err);
     }
   }
 );
@@ -96,15 +88,7 @@ router.post(
         errorLog(error, res);
       }
     } else {
-      return res
-        .status(400)
-        .json(
-          responseParsed.errorResponse(
-            "Forms is not completed, please check again",
-            400,
-            err.array()
-          )
-        );
+      handleValidation(res, err);
     }
   }
 );
@@ -132,15 +116,7 @@ router.get(
         errorLog(error, res);
       }
     } else {
-      return res
-        .status(400)
-        .json(
-          responseParsed.errorResponse(
-            "Forms is not completed, please check again",
-            400,
-            err.array()
-          )
-        );
+      handleValidation(res, err);
     }
   }
 );
