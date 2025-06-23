@@ -20,7 +20,7 @@ router.post(
 
     if (err.isEmpty()) {
       try {
-        const { name, email, password, ...body } = req.body;
+        const { name, email, password } = req.body;
 
         const getUserData = await User.findOne({ where: { email: email } });
 
@@ -56,7 +56,7 @@ router.post(
 
     if (err.isEmpty()) {
       try {
-        const { email, password, ...body } = req.body;
+        const { email, password } = req.body;
 
         const getUserData = await User.findOne({ where: { email: email } });
 
@@ -70,7 +70,7 @@ router.post(
               },
               String(process.env.TOKEN),
               {
-                expiresIn: "5d",
+                expiresIn: "30d",
                 algorithm: "HS256",
               }
             );
