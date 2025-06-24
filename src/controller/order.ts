@@ -125,10 +125,49 @@ router.post(
         body.user_id = reader.id;
         body.price_per_unit = product.price;
         body.line_total = lineTotal;
+        body.status = "PENDING"; // Default status for new orders
 
         const data = await Order.create(body);
 
         return res.status(200).json(responseParsed.apiCreated(data));
+      } catch (error) {
+        errorLog(error, res);
+      }
+    } else {
+      handleValidation(res, err);
+    }
+  }
+);
+
+router.put(
+  "/:id",
+  body("product_id").isInt({ gt: 0 }),
+  body("quantity").isInt({ gt: 0 }),
+  body("status").optional().isString(),
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const err = validationResult(req);
+    if (err.isEmpty()) {
+      const { id }: any = req.params;
+      try {
+        const body = req.body;
+        const order = await Order.findByPk(id);
+        const product = await Product.findByPk(body.product_id);
+
+        if (!order || !product) {
+          return res.status(404).json(responseParsed.dataNotFound());
+        }
+
+        // Calculate line total
+        const lineTotal = product.price * body.quantity;
+
+        // Create the order
+        body.price_per_unit = product.price;
+        body.line_total = lineTotal;
+
+        // Update the order
+        await order.update(body);
+
+        return res.status(200).json(responseParsed.apiUpdated(order));
       } catch (error) {
         errorLog(error, res);
       }

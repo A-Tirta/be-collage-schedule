@@ -34,6 +34,9 @@ export default {
       line_total: {
         type: DataTypes.DECIMAL(10, 2),
       },
+      status: {
+        type: DataTypes.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

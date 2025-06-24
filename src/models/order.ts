@@ -59,4 +59,11 @@ export class Order extends Model {
     allowNull: true,
   })
   line_total!: number;
+
+  // ... other columns are fine ...
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  status!: string;
 }
