@@ -21,9 +21,14 @@ router.get(
         const queryOptions = getRequestQuery(req);
 
         const where: any = {};
-        if (queryOptions.search) {
+        if (queryOptions.search && queryOptions.search != "") {
           // Using Op.like for a partial match. For PostgreSQL, Op.iLike is great for case-insensitivity.
           where.name = { [Op.like]: `%${queryOptions.search}%` };
+        }
+
+        if (queryOptions.is_active !== undefined) {
+          // If is_active is provided, filter by it
+          where.is_active = queryOptions.is_active === "true";
         }
 
         const { count, rows: products } = await Product.findAndCountAll({
@@ -62,6 +67,97 @@ router.get(
         }
 
         return res.status(200).json(responseParsed.apiItem(product));
+      } catch (error) {
+        errorLog(error, res);
+      }
+    } else {
+      handleValidation(res, err);
+    }
+  }
+);
+
+router.post(
+  "/",
+  body("name").isString().isLength({ max: 255 }),
+  body("description").isString().optional(),
+  body("stock_quantity").isInt({ gt: -1 }),
+  body("price").isFloat({ gt: 0 }),
+  body("is_active").isBoolean().optional().default(0),
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const err = validationResult(req);
+    if (err.isEmpty()) {
+      try {
+        const body = req.body;
+
+        const product = await Product.create(body);
+
+        return res.status(200).json(responseParsed.apiCreated(product));
+      } catch (error) {
+        errorLog(error, res);
+      }
+    } else {
+      handleValidation(res, err);
+    }
+  }
+);
+
+router.put(
+  "/:id",
+  body("name").isString().isLength({ max: 255 }),
+  body("description").isString().optional(),
+  body("stock_quantity").isInt({ gt: -1 }),
+  body("price").isFloat({ gt: 0 }),
+  body("is_active").isBoolean().optional().default(0),
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const err = validationResult(req);
+    if (err.isEmpty()) {
+      const { id }: any = req.params;
+      try {
+        const body = req.body;
+        const product = await Product.findByPk(id);
+
+        if (!product) {
+          return res.status(404).json(responseParsed.dataNotFound());
+        }
+
+        // First, update the product
+        await Product.update(body, {
+          where: { id: id },
+        });
+
+        // Then, fetch the updated product again
+        const updatedProduct = await Product.findByPk(id);
+
+        return res.status(200).json(responseParsed.apiUpdated(updatedProduct));
+      } catch (error) {
+        errorLog(error, res);
+      }
+    } else {
+      handleValidation(res, err);
+    }
+  }
+);
+
+router.delete(
+  "/:id",
+  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const err = validationResult(req);
+    if (err.isEmpty()) {
+      const { id }: any = req.params;
+      try {
+        const product = await Product.findByPk(id);
+
+        if (!product) {
+          return res.status(404).json(responseParsed.dataNotFound());
+        }
+
+        await Product.destroy({
+          where: {
+            id: id,
+          },
+        });
+
+        return res.status(200).json(responseParsed.apiDeleted());
       } catch (error) {
         errorLog(error, res);
       }

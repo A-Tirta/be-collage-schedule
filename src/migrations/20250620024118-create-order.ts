@@ -25,23 +25,17 @@ export default {
         },
         allowNull: false,
       },
-      name: {
-        type: DataTypes.STRING,
-      },
-      email: {
-        type: DataTypes.STRING,
-      },
       quantity: {
         type: DataTypes.INTEGER,
       },
       price_per_unit: {
         type: DataTypes.DECIMAL(10, 2),
       },
-      product_name: {
-        type: DataTypes.STRING,
-      },
       line_total: {
         type: DataTypes.DECIMAL(10, 2),
+      },
+      status: {
+        type: DataTypes.STRING,
       },
       createdAt: {
         allowNull: false,
